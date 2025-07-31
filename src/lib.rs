@@ -1,3 +1,2 @@
-fn main() {
-    println!("Hello, world!");
-}
+#[cfg(feature = "str")]
+pub mod str_ext;
