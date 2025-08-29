@@ -1,7 +1,7 @@
 pub trait StringExtensions {
     // fn find_next_char(&self, target_char: char) -> Option<usize>;
     fn find_start_at(&self, search_term: &str, starting_index: usize) -> Option<usize>;
-    fn find_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize>;
+    fn find_vec_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize>;
     // fn index_of_next(&self, target_char: char) -> Option<usize>;
     fn char_at(&self, index: usize) -> Option<char>;
     fn substring(&self, start: usize, len: usize) -> Option<String>;
@@ -21,22 +21,8 @@ impl StringExtensions for String {
         return find_start_at(self, search_term, starting_index);
     }
     
-    fn find_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize> {
-        let mut closest_index = 0;
-        for search_term in search_terms {
-            let start = find_start_at(search_term, starting_index);
-
-            match start {
-                Some(start) => {
-                    if start <= closest_index {
-                        closest_index = start
-                    }
-                },
-                None => panic!("find_start_at: failed")
-            }
-        }
-
-        closest_index
+    fn find_vec_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize> {
+        return find_vec_start_at(&self, search_terms, starting_index);
     }
 
     fn slice(&self, start: usize, end: usize) -> Option<String> {
@@ -55,6 +41,10 @@ impl StringExtensions for &str {
 
     fn find_start_at(&self, search_term: &str, starting_index: usize) -> Option<usize> {
         return find_start_at(&self, search_term, starting_index);
+    }
+
+    fn find_vec_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize> {
+        return find_vec_start_at(&self, search_terms, starting_index);
     }
 
     fn slice(&self, start: usize, end: usize) -> Option<String> {
@@ -126,6 +116,25 @@ fn find_start_at(string: &str, search_term: &str, starting_index: usize) -> Opti
         None => return None
     };
 }
+
+fn find_vec_start_at(string: &str, search_terms: Vec<&str>, starting_index: usize) -> Option<usize> {
+    let mut closest_index = usize::MAX;
+    for search_term in search_terms {
+        let start = find_start_at(string, search_term, starting_index);
+
+        match start {
+            Some(start) => {
+                if start <= closest_index {
+                    closest_index = start
+                }
+            },
+            None => panic!("find_start_at: failed")
+        }
+    }
+
+    Some(closest_index)
+}
+
 // fn find_next_char(&self, target_char: char) -> Option<usize> {
 //     return self.chars().position(|c| c == target_char);
 // }
@@ -177,7 +186,6 @@ mod tests {
         assert_eq!(false, actual.is_some());
     }
 
-    // find_start_at tests
     #[test]
     fn find_start_at_returns_correct_index() {
         let str = String::from("TestTestTest");
@@ -190,6 +198,21 @@ mod tests {
             None => panic!()
         }
     }
+
+    #[test]
+    fn find_vec_start_at_returns_correct_index() {
+        let str = String::from("TestTestTest");
+        let expected = 1;
+
+        let mut list = vec!["e", "s", "t"];
+        let actual = str.find_vec_start_at(list, 0);
+
+        match actual {
+            Some(actual) => assert_eq!(expected, actual),
+            None => panic!()
+        }
+    }
+
 
     #[test]
     fn slice_returns_correct_string() {
