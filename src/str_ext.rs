@@ -35,6 +35,8 @@ impl StringExtensions for String {
                 None => panic!("find_start_at: failed")
             }
         }
+
+        closest_index
     }
 
     fn slice(&self, start: usize, end: usize) -> Option<String> {
