@@ -52,7 +52,6 @@ impl StringExtensions for &str {
     }
 }
 
-// write tests for this to prove out
 fn substring(string: &str, start: usize, len: usize) -> Option<String> {
     let content = string.to_string();
     let mut index = start;
@@ -128,7 +127,7 @@ fn find_vec_start_at(string: &str, search_terms: Vec<&str>, starting_index: usiz
                     closest_index = start
                 }
             },
-            None => panic!("find_start_at: failed")
+            None => continue // this case needs to be handled, sometimes one of the values will not be present
         }
     }
 
@@ -153,14 +152,13 @@ fn find_vec_start_at(string: &str, search_terms: Vec<&str>, starting_index: usiz
 //         None => return None
 //     };
 // }
-//unit tests
+
 #[cfg(test)]
 mod tests {
     use core::panic;
 
     use super::*;
 
-    // char_at tests
     #[test]
     fn test_char_at() {
 
@@ -201,15 +199,18 @@ mod tests {
 
     #[test]
     fn find_vec_start_at_returns_correct_index() {
-        let str = String::from("TestTestTest");
-        let expected = 1;
+        let cases = vec![
+            ("Test", vec!["e", "s", "t"], 1),
+            ("INSERT INTO new_table\n", vec![" ", "\t", "\n"], 6),
+            ("INSERT INTO\tnew_table\n", vec!["\t", "\n"], 11)
+        ];
 
-        let mut list = vec!["e", "s", "t"];
-        let actual = str.find_vec_start_at(list, 0);
-
-        match actual {
-            Some(actual) => assert_eq!(expected, actual),
-            None => panic!()
+        for (str, vec, expected) in cases {
+            let actual = str.find_vec_start_at(vec, 0);
+            match actual {
+                Some(actual) => assert_eq!(expected, actual),
+                None => panic!()
+            }
         }
     }
 
