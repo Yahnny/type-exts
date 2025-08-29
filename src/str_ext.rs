@@ -1,6 +1,7 @@
 pub trait StringExtensions {
     // fn find_next_char(&self, target_char: char) -> Option<usize>;
     fn find_start_at(&self, search_term: &str, starting_index: usize) -> Option<usize>;
+    fn find_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize>;
     // fn index_of_next(&self, target_char: char) -> Option<usize>;
     fn char_at(&self, index: usize) -> Option<char>;
     fn substring(&self, start: usize, len: usize) -> Option<String>;
@@ -20,6 +21,22 @@ impl StringExtensions for String {
         return find_start_at(self, search_term, starting_index);
     }
     
+    fn find_start_at(&self, search_terms: Vec<&str>, starting_index: usize) -> Option<usize> {
+        let mut closest_index = 0;
+        for search_term in search_terms {
+            let start = find_start_at(search_term, starting_index);
+
+            match start {
+                Some(start) => {
+                    if start <= closest_index {
+                        closest_index = start
+                    }
+                },
+                None => panic!("find_start_at: failed")
+            }
+        }
+    }
+
     fn slice(&self, start: usize, end: usize) -> Option<String> {
         return slice(&self, start, end);
     }
